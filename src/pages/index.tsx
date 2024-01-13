@@ -1,9 +1,8 @@
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
 import { LookUpResponse } from "~/server/api/schema/dictionary";
-
 import { api } from "~/utils/api";
+import { UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   const [searchWord, setSearchWord] = useState<string>('');
@@ -46,9 +45,16 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="top-align flex min-h-screen flex-col items-center justify-top py-8">
-        <h3 className="text-5xl">
-          Mehmet's Dictionary
-        </h3>
+
+        <div className="w-full flex flex-row justify-center items-center">
+          <h3 className="text-5xl">
+            Mehmet's Dictionary
+          </h3>
+
+          <div className="flex justify-end justify-self-end">
+            <UserButton />
+          </div>
+        </div>
 
         <div className="container flex flex-col items-center justify-top gap-6 px-4 py-8 disabled">
           <form className="w-full max-w-sm border-solid border-2 border-gray-500 rounded-md">
@@ -118,29 +124,5 @@ export default function Home() {
         </div>
       </main >
     </>
-  );
-}
-
-function AuthShowcase() {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.post.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
   );
 }

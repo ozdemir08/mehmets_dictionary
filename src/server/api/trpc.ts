@@ -16,6 +16,8 @@ import { ZodError } from "zod";
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 
+import { getAuth } from '@clerk/nextjs/server'
+import type { SignedInAuthObject, SignedOutAuthObject } from "@clerk/nextjs/server";
 /**
  * 1. CONTEXT
  *
@@ -23,10 +25,7 @@ import { db } from "~/server/db";
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
-
-interface CreateContextOptions {
-  session: Session | null;
-}
+type AuthContext = SignedInAuthObject | SignedOutAuthObject;
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -38,10 +37,10 @@ interface CreateContextOptions {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+const createInnerTRPCContext = (auth: AuthContext) => {
   return {
-    session: opts.session,
     db,
+    auth,
   };
 };
 
@@ -51,15 +50,8 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
-
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
-
-  return createInnerTRPCContext({
-    session,
-  });
+export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+  return createInnerTRPCContext(getAuth(_opts.req));
 };
 
 /**
@@ -116,13 +108,13 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (ctx.auth == null || ctx.auth.userId == null) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return next({
     ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      user_id: ctx.auth.userId
     },
   });
 });
