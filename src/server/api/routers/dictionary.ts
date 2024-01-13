@@ -3,7 +3,7 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { LookUpRequest, LookUpResponse } from "../schema/dictionary";
+import type { LookUpRequest, LookUpResponse, LookUpResponseWords } from "../schema/dictionary";
 import { lookUpRequestSchema } from "../schema/dictionary";
 
 export const dictionaryRouter = createTRPCRouter({
@@ -11,20 +11,16 @@ export const dictionaryRouter = createTRPCRouter({
 });
 
 async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): Promise<LookUpResponse> {
-
-  const userId = ctx.auth.userId
-  console.log('user_id ' + ctx.auth.userId);
-
   const lookUpUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + input.word;
 
-  let lookupResponsePromise = await fetch(lookUpUrl);
-  const actualResponse = await lookupResponsePromise.json();
+  const lookupResponsePromise = await fetch(lookUpUrl);
+  const actualResponse : LookUpResponseWords = await lookupResponsePromise.json() as LookUpResponseWords;
   
   await increaseLookupCounter({ctx: ctx, word: input.word});
 
   return {
     words: actualResponse
-  };
+  } as LookUpResponse;
 }
 
 async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string}) {

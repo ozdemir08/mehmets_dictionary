@@ -32,10 +32,13 @@ export const word = object(
   }
 );
 
+export const words = array(word);
+
 export const lookUpResponseSchema = object({
-  words: array(word),
+  words: words,
 }
 );
 
+export type LookUpResponseWords = TypeOf<typeof words>;
 export type LookUpRequest = TypeOf<typeof lookUpRequestSchema>;
 export type LookUpResponse = TypeOf<typeof lookUpResponseSchema>;

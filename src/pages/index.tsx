@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useState } from "react";
-import { LookUpResponse } from "~/server/api/schema/dictionary";
+import type { LookUpResponse } from "~/server/api/schema/dictionary";
 import { api } from "~/utils/api";
 import { UserButton } from "@clerk/nextjs";
 
@@ -14,23 +14,22 @@ export default function Home() {
     setSearchWord(input);
   }
 
-  const handleEnterOnInput = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      handleSubmit();
-    }
-  }
+  // Could not find the right type. 
+  // const handleEnterOnInput = (event: KeyboardEvent) => {
+  //   if (event.key === 'Enter') {
+  //     event.preventDefault();
+  //     handleSubmit();
+  //   }
+  // }
 
   api.dictionary.lookUp.useQuery({ word: searchWord },
     {
       onSuccess: (response) => {
-        console.log(response);
         // Update the data here after fetch/re-fetch
         setSearchWordResult(response);
         setErrorMessage('');
       },
       onError: (e) => {
-        console.log('error' + e);
         setErrorMessage(e.message);
       },
       enabled: searchWord != ''
@@ -40,7 +39,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Mehmet's Dictionary</title>
+        <title>Mehmet&apos;s Dictionary</title>
         <meta name="description" content="Mehmet's Dictionary" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -48,7 +47,7 @@ export default function Home() {
 
         <div className="w-full flex flex-row justify-center items-center">
           <h3 className="text-5xl">
-            Mehmet's Dictionary
+            Mehmet&apos;s Dictionary
           </h3>
 
           <div className="flex justify-end justify-self-end">
@@ -61,7 +60,6 @@ export default function Home() {
             <div className="flex justify-content-top items-center">
               <input className="disabled appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Enter a word" aria-label="Word"
                 onChange={e => setInput(e.target.value)}
-                onKeyDown={handleEnterOnInput}
               />
               <button
                 className="px-4 mx-1 bg-gray-100 hover:bg-gray-200 rounded-md"

@@ -9,11 +9,9 @@
 
 import { initTRPC, type inferAsyncReturnType, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 
 import { getAuth } from '@clerk/nextjs/server'
@@ -108,7 +106,7 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (ctx.auth == null || ctx.auth.userId == null) {
+  if (ctx.auth?.userId == null) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
