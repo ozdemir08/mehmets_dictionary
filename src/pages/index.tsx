@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useState } from "react";
 import type { LookUpResponse } from "~/server/api/schema/dictionary";
 import { api } from "~/utils/api";
@@ -18,15 +19,8 @@ export default function Home() {
     {
       onSuccess: (response) => {
         console.log(response);
-        if (response.words['message']) {
-          // The dictionary service returns a message when the word is not
-          // found. 
-          setErrorMessage(searchWord + " not found.");
-        } else {
-          setSearchWordResult(response);
-          setErrorMessage('');
-
-        }
+        setSearchWordResult(response);
+        setErrorMessage('');
       },
       onError: (e) => {
         setErrorMessage(e.message);
@@ -44,9 +38,9 @@ export default function Home() {
       </Head>
       <nav>
         <div className="max-w-screen-lg flex flex-wrap items-center justify-center mx-auto p-4 space-x-6 border-b" >
-          <a href="/" className="text-5xl float-left">
+          <Link href="/" className="text-5xl float-left">
             Mehmet&apos;s Dictionary
-          </a>
+          </Link>
 
           <div className="float-right items-center">
             <UserButton />
