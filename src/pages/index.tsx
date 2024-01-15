@@ -14,20 +14,19 @@ export default function Home() {
     setSearchWord(input);
   }
 
-  // Could not find the right type. 
-  // const handleEnterOnInput = (event: KeyboardEvent) => {
-  //   if (event.key === 'Enter') {
-  //     event.preventDefault();
-  //     handleSubmit();
-  //   }
-  // }
-
   api.dictionary.lookUp.useQuery({ word: searchWord },
     {
       onSuccess: (response) => {
-        // Update the data here after fetch/re-fetch
-        setSearchWordResult(response);
-        setErrorMessage('');
+        console.log(response);
+        if (response.words['message']) {
+          // The dictionary service returns a message when the word is not
+          // found. 
+          setErrorMessage(searchWord + " not found.");
+        } else {
+          setSearchWordResult(response);
+          setErrorMessage('');
+
+        }
       },
       onError: (e) => {
         setErrorMessage(e.message);
@@ -43,34 +42,41 @@ export default function Home() {
         <meta name="description" content="Mehmet's Dictionary" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="top-align flex min-h-screen flex-col items-center justify-top py-8">
-
-        <div className="w-full flex flex-row justify-center items-center">
-          <h3 className="text-5xl">
+      <nav>
+        <div className="max-w-screen-lg flex flex-wrap items-center justify-center mx-auto p-4 space-x-6 border-b" >
+          <a href="/" className="text-5xl float-left">
             Mehmet&apos;s Dictionary
-          </h3>
+          </a>
 
-          <div className="flex justify-end justify-self-end">
+          <div className="float-right items-center">
             <UserButton />
           </div>
         </div>
+      </nav>
 
-        <div className="container flex flex-col items-center justify-top gap-6 px-4 py-8 disabled">
-          <form className="w-full max-w-sm border-solid border-2 border-gray-500 rounded-md">
-            <div className="flex justify-content-top items-center">
-              <input className="disabled appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Enter a word" aria-label="Word"
-                onChange={e => setInput(e.target.value)}
-              />
-              <button
-                className="px-4 mx-1 bg-gray-100 hover:bg-gray-200 rounded-md"
-                type="button"
-                onClick={handleSubmit}
-              >
-                Search
-              </button>
-            </div>
-          </form>
+      <main className="max-w-screen-lg top-align flex min-h-screen items-center flex-col justify-top-center mx-auto">
+        <form className="border-solid border-2 border-gray-500 rounded-md my-6 justify-center items-center">
 
+          <div className="flex flex-row">
+            <input className="
+                min-w-80 disabled appearance-none bg-transparent border-none w-full 
+                text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+              type="text" placeholder="Enter a word" aria-label="Word"
+              onChange={e => setInput(e.target.value)}
+            />
+
+            <button
+              className="p-2 px-4 m-2 bg-neutral-400 hover:bg-neutral-600 rounded-md btn-primary"
+              type="button"
+              onClick={handleSubmit}>
+              Search
+            </button>
+          </div>
+
+        </form>
+
+
+        <div className="container flex flex-col justify-top gap-6 px-8 py-6 disabled">
           <div>
             {errorMessage}
           </div>
@@ -80,38 +86,32 @@ export default function Home() {
               (word, index) => {
                 return (
                   <div key={word.word + index} >
-                    <div className="text-4xl text-gray-800" > {word.word} </div>
-                    <br />
+                    <div className="text-4xl text-gray-800 py-4" > {word.word} </div>
+
                     <div>
                       {word.meanings.map((meaning, index) => {
                         return (
-                          <div key={meaning.partOfSpeech + index}>
+                          <div key={meaning.partOfSpeech + index} className="py-4">
                             <div className="text-2xl text-gray-700 font-semi-bold" key={meaning.partOfSpeech}>{meaning.partOfSpeech}</div>
                             <div>
                               {
                                 meaning.definitions.map((definition, index) => {
                                   return (
-                                    <>
+                                    <div key={definition.definition + index}>
                                       <div key={definition.definition + index} className="text-lg text-gray-600">
                                         - {definition.definition}
                                       </div>
-                                      <div key={definition.example + index} className="text-base text-gray-500">
-                                        <i>
-                                          {definition.example}
-                                        </i>
+                                      <div key={definition.example + index} className="text-base text-gray-500 italic">
+                                        {definition.example}
                                       </div>
-                                      <br />
-                                    </>
+                                    </div>
                                   )
                                 })
                               }
                             </div>
-                            <br />
                           </div>
                         )
                       })}
-                      <br />
-
                     </div>
                   </div>
                 )
