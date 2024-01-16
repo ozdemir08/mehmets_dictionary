@@ -3,12 +3,13 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { LookUpRequest, LookUpResponse, LookUpResponseWords } from "../schema/dictionary";
-import { lookUpRequestSchema } from "../schema/dictionary";
+import type { HistoryRequest, HistoryResponse, LookUpRequest, LookUpResponse, LookUpResponseWords } from "../schema/dictionary";
+import { getHistoryRequestSchema, lookUpRequestSchema } from "../schema/dictionary";
 import { TRPCError } from "@trpc/server";
 
 export const dictionaryRouter = createTRPCRouter({
   lookUp: publicProcedure.input(lookUpRequestSchema).query(lookUp),
+  getHistory: publicProcedure.input(getHistoryRequestSchema).query(getHistory),
 });
 
 async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): Promise<LookUpResponse> {
@@ -17,7 +18,7 @@ async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): P
   const lookupResponse = await fetch(lookUpUrl);
 
   const actualResponse: LookUpResponseWords = await lookupResponse.json() as LookUpResponseWords;
-   
+
   if (actualResponse.length == undefined) {
     throw new TRPCError({
       code: 'NOT_FOUND',
@@ -33,7 +34,6 @@ async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): P
 }
 
 async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string }) {
-  console.log("Looking up " + word);
   const userId = getUserIdFromContext(ctx);
   const wordInDb = await ctx.db.word.findFirst({
     where: {
@@ -63,11 +63,30 @@ async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string
   }
 }
 
+async function getHistory({ ctx, input }: { ctx: Context, input: HistoryRequest }): Promise<HistoryResponse> {
+  const userId = getUserIdFromContext(ctx);
+
+  const history = await ctx.db.word.findMany({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      lookUpCount: 'desc',
+    }
+  });
+
+  console.log(history);
+  return history as HistoryResponse;
+}
+
 function getUserIdFromContext(ctx: Context): string {
   const userId = ctx.auth.userId;
 
   if (userId == null) {
-    throw new Error('User is not signed in!!!! FUCK FUCK FUCK.')
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'User is not signed in!!!! FUCK FUCK FUCK.'
+    });
   }
 
   return userId;

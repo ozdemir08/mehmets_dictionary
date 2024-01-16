@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { LookUpResponse } from "~/server/api/schema/dictionary";
 import { api } from "~/utils/api";
 import { UserButton } from "@clerk/nextjs";
+import History from "./history";
 
 export default function Home() {
   const [searchWord, setSearchWord] = useState<string>('');
@@ -12,13 +13,12 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleSubmit = () => {
-    setSearchWord(input);
+    setSearchWord(input.toLowerCase());
   }
 
   api.dictionary.lookUp.useQuery({ word: searchWord },
     {
       onSuccess: (response) => {
-        console.log(response);
         setSearchWordResult(response);
         setErrorMessage('');
       },
@@ -113,6 +113,10 @@ export default function Home() {
             )}
           </div>
 
+        </div>
+
+        <div>
+          <History />
         </div>
       </main >
     </>
