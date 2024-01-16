@@ -67,6 +67,10 @@ async function getHistory({ ctx, input }: { ctx: Context, input: HistoryRequest 
   const userId = getUserIdFromContext(ctx);
 
   const history = await ctx.db.word.findMany({
+    select: {
+      word: true, 
+      lookUpCount: true,
+    }, 
     where: {
       userId: userId,
     },
