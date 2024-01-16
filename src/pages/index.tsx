@@ -38,7 +38,7 @@ export default function Home() {
       </Head>
       <nav>
         <div className="max-w-screen-lg flex flex-wrap items-center justify-center mx-auto p-4 space-x-6 border-b" >
-          <Link href="/" className="text-5xl float-left">
+          <Link href="/" className="text-2xl float-left">
             Mehmet&apos;s Dictionary
           </Link>
 
@@ -53,7 +53,7 @@ export default function Home() {
 
           <div className="flex flex-row">
             <input className="
-                min-w-80 disabled appearance-none bg-transparent border-none w-full 
+                disabled appearance-none bg-transparent border-none w-full 
                 text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
               type="text" placeholder="Enter a word" aria-label="Word"
               onChange={e => setInput(e.target.value)}
