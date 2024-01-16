@@ -36,6 +36,10 @@ async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): P
 async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string }) {
   const userId = getUserIdFromContext(ctx);
   const wordInDb = await ctx.db.word.findFirst({
+    select: {
+      id: true,
+      lookUpCount: true,
+    },
     where: {
       userId: userId,
       word: word
@@ -68,9 +72,9 @@ async function getHistory({ ctx, input }: { ctx: Context, input: HistoryRequest 
 
   const history = await ctx.db.word.findMany({
     select: {
-      word: true, 
+      word: true,
       lookUpCount: true,
-    }, 
+    },
     where: {
       userId: userId,
     },
