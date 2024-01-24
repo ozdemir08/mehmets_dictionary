@@ -6,6 +6,7 @@ export const lookUpRequestSchema = object({
 });
 
 export const phonetic = object({
+  text: string(),
   audio: string(),
   sourceUrl: string(),
 });

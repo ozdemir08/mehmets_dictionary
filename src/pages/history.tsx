@@ -1,42 +1,31 @@
-import { useState } from "react";
-import { HistoryResponse } from "~/server/api/schema/dictionary";
 import { api } from "~/utils/api";
 
 export default function History() {
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [history, setHistory] = useState<HistoryResponse>();
+  const history = api.dictionary.getHistory.useQuery({}, {
+    retryOnMount: false, cacheTime: Infinity, refetchOnWindowFocus: false,
+  });
 
-  api.dictionary.getHistory.useQuery({},
-    {
-      onSuccess: (response) => {
-        console.log(response);
-        setHistory(response);
-        setErrorMessage('');
-      },
-      onError: (e) => {
-        console.log(e);
-        setErrorMessage(e.message);
-      },
-    }
-  );
+  if (!history.isFetched || history.data?.length == 0) {
+    return null;
+  }
 
   return (
     <>
-      <div className="flex flax-wrap flex-col">
+      <div className="flex flax-wrap flex-col m-2 sm:items-center">
         <h3 className="text-2xl text-gray-600">Lookup history</h3>
         <div>
-          {errorMessage}
+          {history.error?.message}
         </div>
 
         <div>
           {
-            history?.length == 0 ?
+            history.data?.length == 0 ?
               <div> You have not looked up any words yet.</div> : (
-                history?.map(
+                history.data?.map(
                   entry => {
                     return (
-                      <div key={entry.word}>
+                      <div key={entry.word} className="my-2">
                         {entry.word} - {entry.lookUpCount}
                       </div>
                     );

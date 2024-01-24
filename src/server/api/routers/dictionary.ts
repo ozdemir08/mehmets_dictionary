@@ -26,10 +26,22 @@ async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): P
     });
   }
 
+  const polishedResponse = actualResponse.map(
+    word => {
+      return {
+        'word': word.word,
+        'phonetics': word.phonetics
+          .filter(phonetic => phonetic.text != '' && phonetic.text != null)
+          .sort((a, b) => b.audio.length - a.audio.length),
+        'meanings': word.meanings
+      }
+    }
+  );
+
   await increaseLookupCounter({ ctx: ctx, word: input.word });
 
   return {
-    words: actualResponse
+    words: polishedResponse
   } as LookUpResponse;
 }
 
@@ -47,7 +59,6 @@ async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string
   });
 
   if (wordInDb == null) {
-    console.log("Adding " + word + "to db");
     await ctx.db.word.create({
       data: {
         userId: userId,
