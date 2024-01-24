@@ -13,7 +13,7 @@ export default function Home() {
   const router = useRouter()
 
   const handleSubmit = () => {
-    router.push('/?word=' + input);
+    router.push('/?word=' + input.toLowerCase());
   };
 
   const playAudio = async (audio: string) => {

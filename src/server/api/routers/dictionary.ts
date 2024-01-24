@@ -38,7 +38,7 @@ async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): P
     }
   );
 
-  await increaseLookupCounter({ ctx: ctx, word: input.word });
+  await increaseLookupCounter({ ctx: ctx, word: input.word.toLowerCase() });
 
   return {
     words: polishedResponse
