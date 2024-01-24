@@ -12,13 +12,13 @@ export default function History() {
 
   return (
     <>
-      <div className="flex flax-wrap flex-col m-2 sm:items-center">
-        <h3 className="text-2xl text-gray-600">Lookup history</h3>
+      <div className="flex flax-wrap flex-col m-2">
+        <h3 className="text-2xl text-black">Lookup history</h3>
         <div>
           {history.error?.message}
         </div>
 
-        <div>
+        <div className="grid grid-cols-2 sm:grid-cols-4">
           {
             history.data?.length == 0 ?
               <div> You have not looked up any words yet.</div> : (
@@ -26,7 +26,13 @@ export default function History() {
                   entry => {
                     return (
                       <div key={entry.word} className="my-2">
-                        {entry.word} - {entry.lookUpCount}
+                        <a href={'/?word=' + entry.word.toLowerCase()}
+                          className="px-2 py-1 bg-gray-200 rounded-md">
+                          {entry.word}
+                        </a>
+                        <div className="has-tooltip">
+                          <span className="px-2 py-1 text-gray-700 bg-gray-100 rounded-md text-xs">{entry.lookUpCount}</span>
+                        </div>
                       </div>
                     );
                   }

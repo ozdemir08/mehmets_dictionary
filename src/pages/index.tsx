@@ -59,7 +59,7 @@ export default function Home() {
 
         <form className="flex flex-row w-full sm:w-auto border-2 border-gray-500 rounded-md m-4 justify-end">
           <input className="
-                appearance-none bg-transparent border-none  
+                border-none  
                 text-gray-700 mr-3 py-1 px-2 leading-tight w-full"
             type="text" placeholder="Enter a word" aria-label="Word"
             autoFocus onChange={e => setInput(e.target.value)}
