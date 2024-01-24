@@ -30,9 +30,7 @@ export default function History() {
                           className="px-2 py-1 bg-gray-200 rounded-md">
                           {entry.word}
                         </a>
-                        <div className="has-tooltip">
-                          <span className="px-2 py-1 text-gray-700 bg-gray-100 rounded-md text-xs">{entry.lookUpCount}</span>
-                        </div>
+                        <span className="px-2 py-1 text-gray-700 bg-gray-100 rounded-md text-xs">{entry.lookUpCount}</span>
                       </div>
                     );
                   }
