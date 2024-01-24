@@ -45,7 +45,7 @@ export default function Home() {
             <div className="bg-green-500 h-4 w-6"></div>
           </div>
 
-          <Link href="/" className="text-3xl float-left">
+          <Link href="/" className="text-2xl float-left">
             Mehmet&apos;s Dictionary
           </Link>
 
