@@ -5,36 +5,36 @@ export const lookUpRequestSchema = object({
   word: string(),
 });
 
-export const phonetic = object({
+export const phoneticSchema = object({
   text: string(),
   audio: string(),
   sourceUrl: string(),
 });
 
-export const definition = object({
+export const definitionSchema = object({
   definition: string(),
   example: string(),
   synonyms: array(string()),
   antonyms: array(string()),
 });
 
-export const meaning = object({
+export const meaningSchema = object({
   partOfSpeech: string(),
-  definitions: array(definition),
+  definitions: array(definitionSchema),
   synonyms: array(string()),
   antonyms: array(string()),
 });
 
-export const word = object({
+export const wordSchema = object({
   word: string(),
-  phonetics: array(phonetic),
-  meanings: array(meaning)
+  phonetics: array(phoneticSchema),
+  meanings: array(meaningSchema)
 });
 
-export const words = array(word);
+export const wordsSchema = array(wordSchema);
 
 export const lookUpResponseSchema = object({
-  words: words,
+  words: wordsSchema,
 });
 
 export const getHistoryRequestSchema = object({});
@@ -43,7 +43,7 @@ export const getHistoryResponseSchema = array(object({
   lookUpCount: number()
 }));
 
-export type LookUpResponseWords = TypeOf<typeof words>;
+export type LookUpResponseWords = TypeOf<typeof wordsSchema>;
 export type LookUpRequest = TypeOf<typeof lookUpRequestSchema>;
 export type LookUpResponse = TypeOf<typeof lookUpResponseSchema>;
 

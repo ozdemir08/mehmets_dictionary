@@ -38,18 +38,16 @@ export default function Home() {
       </Head>
 
       <nav>
-        <div className="max-w-screen-lg flex flex-wrap items-center justify-evenly mx-auto p-4 space-x-6 border-b bg-red-400" >
-          <div className="grid grid-rows-3">
-            <div className="bg-red-500 h-4 w-6"></div>
-            <div className="bg-blue-500 h-4 w-6"></div>
-            <div className="bg-green-500 h-4 w-6"></div>
-          </div>
-
-          <Link href="/" className="text-2xl float-left">
+        <div className="max-w-screen-lg flex flex-wrap justify-between items-center mx-auto p-8 space-x-6 border-b bg-red-400" >
+          <Link href="/" className="text-xl">
             Mehmet&apos;s Dictionary
           </Link>
 
-          <div className="float-right items-center">
+          <Link href="/quiz" className="text-xl">
+            Quiz
+          </Link>
+
+          <div className="justify-self-end float-right items-center">
             <UserButton />
           </div>
         </div>

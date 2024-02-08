@@ -15,10 +15,12 @@ datasource db {
 }
 
 model Word {
-    id          String   @id @default(auto()) @map("_id") @db.ObjectId
-    userId      String
-    word        String
-    lookUpCount Int      @default(1)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+    userId                String
+    word                  String
+    lookUpCount           Int       @default(1)
+    correctAnswerStreak   Int       @default(0)
+    lastAnswerSubmittedAt DateTime? @default(now())
+    createdAt             DateTime? @default(now())
+    updatedAt             DateTime? @updatedAt
 }

@@ -1,5 +1,6 @@
 import { dictionaryRouter } from "~/server/api/routers/dictionary";
 import { createTRPCRouter } from "~/server/api/trpc";
+import { quizRouter } from "./routers/quiz";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   dictionary: dictionaryRouter,
+  quiz: quizRouter,
 });
 
 // export type definition of API
