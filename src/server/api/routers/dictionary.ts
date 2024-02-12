@@ -53,7 +53,10 @@ async function lookUp({
     };
   });
 
-  await increaseLookupCounter({ ctx: ctx, word: input.word.toLowerCase() });
+  await increaseLookupCounter({
+    ctx: ctx,
+    word: input.word.toLowerCase().trim(),
+  });
 
   return {
     words: polishedResponse,
