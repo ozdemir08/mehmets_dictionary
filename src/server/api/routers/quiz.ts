@@ -3,65 +3,80 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { QuizRequest, QuizResponse, SubmitAnswerRequest } from "../schema/quiz";
+import type {
+  QuizRequest,
+  QuizResponse,
+  SubmitAnswerRequest,
+} from "../schema/quiz";
+
 import { quizRequestSchema, submitAnswerSchema } from "../schema/quiz";
-import { TRPCError } from "@trpc/server";
-import { submitAnswer as persistAnswer, getNextWordsForQuiz } from "~/server/persistence/quiz_persistence_service";
-import { Word } from "@prisma/client";
+import {
+  submitAnswer as persistAnswer,
+  getNextWordsForQuiz,
+} from "~/server/persistence/quiz_persistence_service";
+import { type Word } from "@prisma/client";
 
 export const quizRouter = createTRPCRouter({
   getQuiz: publicProcedure.input(quizRequestSchema).query(getQuiz),
-  submitAnswer: publicProcedure.input(submitAnswerSchema).mutation(submitAnswer),
+  submitAnswer: publicProcedure
+    .input(submitAnswerSchema)
+    .mutation(submitAnswer),
 });
 
-async function getQuiz({ ctx, input }: { ctx: Context, input: QuizRequest }): Promise<QuizResponse> {
-
+async function getQuiz({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: QuizRequest;
+}): Promise<QuizResponse> {
   const words = await getNextWordsForQuiz(ctx, 120);
 
-  // D-D-D-W-M-Y  
+  // D-D-D-W-M-Y
   // 1. Eliminate words that should not be shown.
   const wordsThatCanBeShown = words.filter((word) => {
     if (word.correctAnswerStreak == 0) {
       return true;
     }
 
-    // TODO: The date addition / subtraction does not seem to work. Fix them. 
-    // Bringing them all to the UTC timezone may be the answer.
     const now = new Date();
     if (word.correctAnswerStreak < 3) {
-      // Can be shown if last answer is given more than a day ago. 
+      // Can be shown if last answer is given more than a day ago.
       return now > addDays(word.lastAnswerSubmittedAt, 1);
     }
 
     if (word.correctAnswerStreak == 4) {
-      // Can be shown if last answer is given more than a week ago. 
+      // Can be shown if last answer is given more than a week ago.
       return now > addDays(word.lastAnswerSubmittedAt, 7);
     }
 
     if (word.correctAnswerStreak == 5) {
-      // Can be shown if last answer is given more than a month ago. 
+      // Can be shown if last answer is given more than a month ago.
       return now > addDays(word.lastAnswerSubmittedAt, 30);
     }
 
     if (word.correctAnswerStreak == 6) {
-      // Can be shown if last answer is given more than a quarter ago. 
+      // Can be shown if last answer is given more than a quarter ago.
       return now > addDays(word.lastAnswerSubmittedAt, 90);
     }
 
     if (word.correctAnswerStreak > 6) {
-      // Can be shown if last answer is given more than a year ago. 
+      // Can be shown if last answer is given more than a year ago.
       return now > addDays(word.lastAnswerSubmittedAt, 365);
     }
   });
 
-  // 2. Sort them based on criteria below: 1. Higher lookup count. 
+  // 2. Sort them based on criteria below: 1. Higher lookup count.
   wordsThatCanBeShown.sort((a, b) => {
     if (a.lookUpCount != b.lookUpCount) {
       return b.lookUpCount - a.lookUpCount;
     }
 
     if (b.lastAnswerSubmittedAt && a.lastAnswerSubmittedAt) {
-      return b.lastAnswerSubmittedAt?.getUTCSeconds() - a.lastAnswerSubmittedAt?.getUTCSeconds();
+      return (
+        b.lastAnswerSubmittedAt?.getUTCSeconds() -
+        a.lastAnswerSubmittedAt?.getUTCSeconds()
+      );
     }
 
     return b.lastAnswerSubmittedAt ? 1 : -1;
@@ -70,12 +85,14 @@ async function getQuiz({ ctx, input }: { ctx: Context, input: QuizRequest }): Pr
   // 3. Select a subset of them.
   const wordsToShow = wordsThatCanBeShown.slice(0, 20);
 
-  const wordsToShowWithThesaurus = await Promise.all(wordsToShow.map(async word => await getThesaurusResult(word)));
+  const wordsToShowWithThesaurus = await Promise.all(
+    wordsToShow.map(async (word) => await getThesaurusResult(word)),
+  );
 
   const finalResults = {
     questions: wordsToShowWithThesaurus
-      .map(element => thesaurusResultToQuizResponse(element, words))
-      .filter(element => element.synonyms.length > 0)
+      .map((element) => thesaurusResultToQuizResponse(element, words))
+      .filter((element) => element.synonyms.length > 0),
   } as QuizResponse;
 
   return finalResults;
@@ -91,14 +108,29 @@ function addDays(date: Date | null, days: number): Date {
   return newDate;
 }
 
-async function submitAnswer({ ctx, input }: { ctx: Context, input: SubmitAnswerRequest }): Promise<void> {
+async function submitAnswer({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: SubmitAnswerRequest;
+}): Promise<void> {
   await persistAnswer(ctx, input);
 }
 
-function thesaurusResultToQuizResponse(thesaurusResult: ThesaurusResult, allWords: Array<Word>): { info: string, synonyms: Array<string>, choices: Array<string>, answer: string } {
-  const choices = allWords.map(word => word.word)
-    .filter(element => element != thesaurusResult.word.word)
-    .sort(() => Math.random() > 0.5 ? 1 : -1)
+function thesaurusResultToQuizResponse(
+  thesaurusResult: ThesaurusResult,
+  allWords: Array<Word>,
+): {
+  info: string;
+  synonyms: Array<string>;
+  choices: Array<string>;
+  answer: string;
+} {
+  const choices = allWords
+    .map((word) => word.word)
+    .filter((element) => element != thesaurusResult.word.word)
+    .sort(() => (Math.random() > 0.5 ? 1 : -1))
     .slice(0, 4);
   choices.push(thesaurusResult.word.word);
 
@@ -106,8 +138,8 @@ function thesaurusResultToQuizResponse(thesaurusResult: ThesaurusResult, allWord
     info: getInfo(thesaurusResult.word),
     synonyms: thesaurusResult.synonyms.slice(0, 5),
     choices: choices.sort(),
-    answer: thesaurusResult.word.word
-  }
+    answer: thesaurusResult.word.word,
+  };
 }
 
 function getInfo(word: Word): string {
@@ -128,15 +160,16 @@ function getInfo(word: Word): string {
 
 async function getThesaurusResult(word: Word): Promise<ThesaurusResult> {
   const result = await fetch(
-    'https://api.api-ninjas.com/v1/thesaurus?word=' + word.word,
+    "https://api.api-ninjas.com/v1/thesaurus?word=" + word.word,
     {
       headers: {
-        'X-Api-Key': 'Qp2emj7Al9A6gUBY2Q1yJA==Z0iTnzbh2VIv0jaa'
+        "X-Api-Key": "Qp2emj7Al9A6gUBY2Q1yJA==Z0iTnzbh2VIv0jaa",
       },
-    });
+    },
+  );
 
   // Ugly, but I need to replace the word with a Word object.
-  const resultAsJson = await result.json() as ThesaurusResult;
+  const resultAsJson = (await result.json()) as ThesaurusResult;
 
   resultAsJson.word = word;
 
@@ -144,7 +177,7 @@ async function getThesaurusResult(word: Word): Promise<ThesaurusResult> {
 }
 
 interface ThesaurusResult {
-  word: Word,
-  synonyms: Array<string>,
-  antonyms: Array<string>
-};
+  word: Word;
+  synonyms: Array<string>;
+  antonyms: Array<string>;
+}

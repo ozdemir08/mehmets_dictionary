@@ -3,8 +3,17 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { HistoryRequest, HistoryResponse, LookUpRequest, LookUpResponse, LookUpResponseWords } from "../schema/dictionary";
-import { getHistoryRequestSchema, lookUpRequestSchema } from "../schema/dictionary";
+import type {
+  HistoryRequest,
+  HistoryResponse,
+  LookUpRequest,
+  LookUpResponse,
+  LookUpResponseWords,
+} from "../schema/dictionary";
+import {
+  getHistoryRequestSchema,
+  lookUpRequestSchema,
+} from "../schema/dictionary";
 import { TRPCError } from "@trpc/server";
 
 export const dictionaryRouter = createTRPCRouter({
@@ -12,40 +21,52 @@ export const dictionaryRouter = createTRPCRouter({
   getHistory: publicProcedure.input(getHistoryRequestSchema).query(getHistory),
 });
 
-async function lookUp({ ctx, input }: { ctx: Context, input: LookUpRequest }): Promise<LookUpResponse> {
-  const lookUpUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + input.word;
+async function lookUp({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: LookUpRequest;
+}): Promise<LookUpResponse> {
+  const lookUpUrl =
+    "https://api.dictionaryapi.dev/api/v2/entries/en/" + input.word;
 
   const lookupResponse = await fetch(lookUpUrl);
 
-  const actualResponse: LookUpResponseWords = await lookupResponse.json() as LookUpResponseWords;
+  const actualResponse: LookUpResponseWords =
+    (await lookupResponse.json()) as LookUpResponseWords;
 
   if (actualResponse.length == undefined) {
     throw new TRPCError({
-      code: 'NOT_FOUND',
-      message: input.word + ' is not found.'
+      code: "NOT_FOUND",
+      message: input.word + " is not found.",
     });
   }
 
-  const polishedResponse = actualResponse.map(
-    word => {
-      return {
-        'word': word.word,
-        'phonetics': word.phonetics
-          .filter(phonetic => phonetic.text != '' && phonetic.text != null)
-          .sort((a, b) => b.audio.length - a.audio.length),
-        'meanings': word.meanings
-      }
-    }
-  );
+  const polishedResponse = actualResponse.map((word) => {
+    return {
+      word: word.word,
+      phonetics: word.phonetics
+        .filter((phonetic) => phonetic.text != "" && phonetic.text != null)
+        .sort((a, b) => b.audio.length - a.audio.length),
+      meanings: word.meanings,
+    };
+  });
 
   await increaseLookupCounter({ ctx: ctx, word: input.word.toLowerCase() });
 
   return {
-    words: polishedResponse
+    words: polishedResponse,
   } as LookUpResponse;
 }
 
-async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string }) {
+async function increaseLookupCounter({
+  ctx,
+  word,
+}: {
+  ctx: Context;
+  word: string;
+}) {
   const userId = getUserIdFromContext(ctx);
   const wordInDb = await ctx.db.word.findFirst({
     select: {
@@ -54,8 +75,8 @@ async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string
     },
     where: {
       userId: userId,
-      word: word
-    }
+      word: word,
+    },
   });
 
   if (wordInDb == null) {
@@ -63,8 +84,8 @@ async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string
       data: {
         userId: userId,
         word: word,
-        lookUpCount: 1
-      }
+        lookUpCount: 1,
+      },
     });
   } else {
     await ctx.db.word.update({
@@ -72,13 +93,19 @@ async function increaseLookupCounter({ ctx, word }: { ctx: Context, word: string
         id: wordInDb.id,
       },
       data: {
-        lookUpCount: wordInDb.lookUpCount + 1
-      }
+        lookUpCount: wordInDb.lookUpCount + 1,
+      },
     });
   }
 }
 
-async function getHistory({ ctx, input }: { ctx: Context, input: HistoryRequest }): Promise<HistoryResponse> {
+async function getHistory({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: HistoryRequest;
+}): Promise<HistoryResponse> {
   const userId = getUserIdFromContext(ctx);
 
   const history = await ctx.db.word.findMany({
@@ -90,11 +117,10 @@ async function getHistory({ ctx, input }: { ctx: Context, input: HistoryRequest 
       userId: userId,
     },
     orderBy: {
-      lookUpCount: 'desc',
-    }
+      lookUpCount: "desc",
+    },
   });
 
-  console.log(history);
   return history as HistoryResponse;
 }
 
@@ -103,8 +129,8 @@ function getUserIdFromContext(ctx: Context): string {
 
   if (userId == null) {
     throw new TRPCError({
-      code: 'BAD_REQUEST',
-      message: 'User is not signed in!!!! FUCK FUCK FUCK.'
+      code: "BAD_REQUEST",
+      message: "User is not signed in!!!! FUCK FUCK FUCK.",
     });
   }
 
