@@ -78,14 +78,14 @@ export default function Quiz() {
         </div>
       </nav>
 
-      <main className="top-align justify-top-center mx-auto flex max-w-screen-lg flex-col px-4">
+      <main className="top-align justify-top-center mx-auto flex max-w-screen-lg flex-col">
         {!fetchQuestions.isLoading && (
           <div className="mt-10 self-center text-xl font-bold">
             Quiz time! Choose the most similar word
           </div>
         )}
 
-        <div className="m-5 flex min-h-96 flex-col items-center justify-center rounded-lg bg-gray-50 shadow-lg">
+        <div className="flex min-h-96 flex-col items-center justify-center rounded-lg bg-gray-50 shadow-lg lg:m-5">
           {!fetchQuestions.isLoading && questions.length == 0 && (
             <div className="info m-4 text-xl font-bold text-green-400">
               You finished everything in this group. Come back later!
