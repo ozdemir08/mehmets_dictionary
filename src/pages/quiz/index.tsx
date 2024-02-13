@@ -65,7 +65,7 @@ export default function Quiz() {
 
       <main className="top-align justify-top-center mx-auto flex max-w-screen-lg flex-col">
         {!fetchQuestions.isLoading && (
-          <div className="mt-10 self-center text-xl font-bold">
+          <div className="m-5 self-center text-xl font-bold">
             Quiz time! Choose the most similar word
           </div>
         )}

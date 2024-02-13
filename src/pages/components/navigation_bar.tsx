@@ -4,7 +4,7 @@ import { UserButton } from "@clerk/nextjs";
 export default function NavigationBar() {
   return (
     <nav>
-      <div className="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between bg-gray-50 p-8">
+      <div className="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between bg-gray-50 p-4">
         <div className="space-x-6">
           <Link
             href="/"

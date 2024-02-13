@@ -65,7 +65,7 @@ export default function Home() {
         </form>
 
         <div className="justify-top disabled container mx-2 flex flex-col">
-          {lookUpResult.isLoading && (
+          {word != null && lookUpResult.isLoading && (
             <div className="mt-10 self-center">Loading...</div>
           )}
 
