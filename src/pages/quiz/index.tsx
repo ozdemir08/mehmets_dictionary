@@ -5,6 +5,7 @@ import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import { type QuizResponse } from "~/server/api/schema/quiz";
 import { type Question } from "~/server/api/schema/quiz";
+import NavigationBar from "../components/navigation_bar";
 
 export default function Quiz() {
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
@@ -62,21 +63,7 @@ export default function Quiz() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <nav>
-        <div className="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between space-x-6 border-b bg-red-400 p-8">
-          <Link href="/" className="text-xl">
-            Mehmet&apos;s Dictionary
-          </Link>
-
-          <Link href="/quiz" className="text-xl">
-            Quiz
-          </Link>
-
-          <div className="float-right items-center justify-self-end">
-            <UserButton />
-          </div>
-        </div>
-      </nav>
+      <NavigationBar />
 
       <main className="top-align justify-top-center mx-auto flex max-w-screen-lg flex-col">
         {!fetchQuestions.isLoading && (

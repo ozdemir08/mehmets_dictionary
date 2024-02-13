@@ -1,10 +1,9 @@
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/utils/api";
-import { UserButton } from "@clerk/nextjs";
-import History from "./history";
+import History from "./components/history";
+import NavigationBar from "./components/navigation_bar";
 
 export default function Home() {
   const word = useSearchParams().get("word");
@@ -41,21 +40,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <nav>
-        <div className="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between space-x-6 bg-gray-50 p-8">
-          <Link href="/" className="text-xl">
-            Mehmet&apos;s Dictionary
-          </Link>
-
-          <Link href="/quiz" className="text-xl">
-            Quiz
-          </Link>
-
-          <div className="items-center justify-self-end">
-            <UserButton />
-          </div>
-        </div>
-      </nav>
+      <NavigationBar />
 
       <main className="top-align justify-top-center mx-auto flex max-w-screen-lg flex-col items-center bg-gray-50 px-4">
         <form className="m-4 flex w-full flex-row justify-end rounded-md border-2 border-gray-500 sm:w-auto">
