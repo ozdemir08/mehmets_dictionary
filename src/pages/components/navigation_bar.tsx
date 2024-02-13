@@ -19,6 +19,13 @@ export default function NavigationBar() {
           >
             Quiz
           </Link>
+
+          <Link
+            href="/stats"
+            className="rounded-md px-2 py-1 text-xl hover:bg-gray-200"
+          >
+            Stats
+          </Link>
         </div>
         <div className="items-center justify-self-end">
           <UserButton />

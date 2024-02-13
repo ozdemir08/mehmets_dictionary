@@ -1,7 +1,5 @@
 import Head from "next/head";
-import Link from "next/link";
 import { api } from "~/utils/api";
-import { UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import { type QuizResponse } from "~/server/api/schema/quiz";
 import { type Question } from "~/server/api/schema/quiz";

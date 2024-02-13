@@ -65,7 +65,13 @@ export default function Home() {
         </form>
 
         <div className="justify-top disabled container mx-2 flex flex-col">
-          <div>{lookUpResult.error?.message}</div>
+          {lookUpResult.isLoading && (
+            <div className="mt-10 self-center">Loading...</div>
+          )}
+
+          {lookUpResult.error != null && (
+            <div>{lookUpResult.error?.message}</div>
+          )}
 
           <div>
             {lookUpResult.data?.words.map((word, index) => {
@@ -76,15 +82,19 @@ export default function Home() {
                     {word.word}{" "}
                   </div>
                   <div className="mt-2 flex flex-row">
-                    {word.phonetics.map((phonetic, index) => (
-                      <div
-                        key={phonetic.text + index}
-                        className="mr-2 pe-2 text-gray-700"
-                        onClick={() => playAudio(phonetic.audio)}
-                      >
-                        {phonetic.text}
-                      </div>
-                    ))}
+                    {word.phonetics.map(
+                      (phonetic, index) =>
+                        phonetic.audio != "" &&
+                        phonetic.audio != null && (
+                          <div
+                            key={phonetic.text + index}
+                            className="mr-2 pe-2 text-gray-700"
+                            onClick={() => playAudio(phonetic.audio)}
+                          >
+                            {phonetic.text}
+                          </div>
+                        ),
+                    )}
                   </div>
                   <div>
                     {word.meanings.map((meaning, index) => {
