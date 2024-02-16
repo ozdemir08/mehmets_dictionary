@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { api } from "~/utils/api";
-import History from "./components/history";
 import NavigationBar from "./components/navigation_bar";
 
 export default function Home() {
@@ -166,10 +165,6 @@ export default function Home() {
               );
             })}
           </div>
-        </div>
-
-        <div className="m-2 w-full">
-          {lookUpResult.isFetching ? null : <History />}
         </div>
       </main>
     </>

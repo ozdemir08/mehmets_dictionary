@@ -21,6 +21,13 @@ export default function NavigationBar() {
           </Link>
 
           <Link
+            href="/history"
+            className="rounded-md px-2 py-1 text-xl hover:bg-gray-200"
+          >
+            History
+          </Link>
+
+          <Link
             href="/stats"
             className="rounded-md px-2 py-1 text-xl hover:bg-gray-200"
           >
