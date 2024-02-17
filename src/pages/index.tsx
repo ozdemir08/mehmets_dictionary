@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { api } from "~/utils/api";
 import NavigationBar from "./components/navigation_bar";
+import DefinitionView from "./components/definition_view";
+import { useState } from "react";
 
 export default function Home() {
   const word = useSearchParams().get("word");
@@ -13,23 +13,6 @@ export default function Home() {
   const handleSubmit = () => {
     router.push("/?word=" + input.toLowerCase());
   };
-
-  const playAudio = async (audio: string) => {
-    if (audio == "") {
-      return;
-    }
-
-    await new Audio(audio).play();
-  };
-
-  const lookUpResult = api.dictionary.lookUp.useQuery(
-    { word: word! },
-    {
-      enabled: word != null,
-      retryOnMount: false,
-      refetchOnWindowFocus: false,
-    },
-  );
 
   return (
     <>
@@ -63,109 +46,7 @@ export default function Home() {
           </button>
         </form>
 
-        <div className="justify-top disabled container mx-2 flex flex-col">
-          {word != null && lookUpResult.isLoading && (
-            <div className="mt-10 self-center">Loading...</div>
-          )}
-
-          {lookUpResult.error != null && (
-            <div>{lookUpResult.error?.message}</div>
-          )}
-
-          <div>
-            {lookUpResult.data?.words.map((word, index) => {
-              return (
-                <div key={word.word + index}>
-                  <div className="py-4 text-4xl text-gray-800">
-                    {" "}
-                    {word.word}{" "}
-                  </div>
-                  <div className="mt-2 flex flex-row">
-                    {word.phonetics.map(
-                      (phonetic, index) =>
-                        phonetic.audio != "" &&
-                        phonetic.audio != null && (
-                          <div
-                            key={phonetic.text + index}
-                            className="mr-2 pe-2 text-gray-700"
-                            onClick={() => playAudio(phonetic.audio)}
-                          >
-                            {phonetic.text}
-                          </div>
-                        ),
-                    )}
-                  </div>
-                  <div>
-                    {word.meanings.map((meaning, index) => {
-                      return (
-                        <div
-                          key={meaning.partOfSpeech + index}
-                          className="py-4"
-                        >
-                          <div
-                            className="font-semi-bold text-2xl text-gray-700"
-                            key={meaning.partOfSpeech}
-                          >
-                            {meaning.partOfSpeech}
-                          </div>
-                          <div>
-                            {meaning.definitions.map((definition, index) => {
-                              return (
-                                <div
-                                  key={definition.definition + index}
-                                  className="my-2"
-                                >
-                                  <div
-                                    key={definition.definition + index}
-                                    className="text-lg"
-                                  >
-                                    - {definition.definition}
-                                  </div>
-                                  <div
-                                    key={definition.example + index}
-                                    className="text-base italic text-gray-700"
-                                  >
-                                    {definition.example}
-                                  </div>
-                                  {definition.antonyms ? (
-                                    <div className="mt-2 flex flex-row">
-                                      {definition.antonyms.map((antonym) => (
-                                        <a
-                                          key={antonym}
-                                          href={`/?word=${antonym}`}
-                                          className="mr-2 rounded-md bg-red-200 px-2"
-                                        >
-                                          {antonym}
-                                        </a>
-                                      ))}
-                                    </div>
-                                  ) : null}
-                                  {definition.synonyms ? (
-                                    <div className="mt-2 flex flex-row">
-                                      {definition.synonyms.map((synonym) => (
-                                        <a
-                                          key={synonym}
-                                          href={`/?word=${synonym}`}
-                                          className="mr-2 rounded-md bg-green-200 px-2"
-                                        >
-                                          {synonym}
-                                        </a>
-                                      ))}
-                                    </div>
-                                  ) : null}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {word != null && <DefinitionView word={word} />}
       </main>
     </>
   );

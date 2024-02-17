@@ -1,4 +1,3 @@
-import { table } from "console";
 import NavigationBar from "../components/navigation_bar";
 
 export default function Stats() {

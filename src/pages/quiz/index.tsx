@@ -4,12 +4,17 @@ import { useState } from "react";
 import { type QuizResponse } from "~/server/api/schema/quiz";
 import { type Question } from "~/server/api/schema/quiz";
 import NavigationBar from "../components/navigation_bar";
+import { useRouter } from "next/navigation";
+import DefinitionView from "../components/definition_view";
 
 export default function Quiz() {
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [questionNumber, setQuestionNumber] = useState(0);
+  const [showMeaning, setShowMeaning] = useState(false);
+
+  const router = useRouter();
 
   const submitAnswer = api.quiz.submitAnswer.useMutation();
 
@@ -51,6 +56,10 @@ export default function Quiz() {
     setQuestionNumber(questionNumber + 1);
     setIsAnswerCorrect(false);
     setIsQuestionAnswered(false);
+  };
+
+  const handleGoToDefinition = () => {
+    router.push("/?word=" + questions.at(questionNumber - 1)?.answer);
   };
 
   return (
@@ -126,20 +135,46 @@ export default function Quiz() {
           )}
 
           {isQuestionAnswered && isAnswerCorrect && (
-            <div className="result mt-10 self-center text-2xl text-green-400">
+            <div className="result mt-5 self-center text-2xl text-green-400">
               Yeyy, correct answer.
             </div>
           )}
 
           {isQuestionAnswered && !isAnswerCorrect && (
-            <div className="result mt-10 self-center text-2xl text-red-400">
+            <div className="result mt-5 self-center text-2xl text-red-400">
               Wrong answer! The correct answer was{" "}
               {questions.at(questionNumber - 1)?.answer}
             </div>
           )}
 
-          {isQuestionAnswered && (
-            <div className="result m-10">
+          {isQuestionAnswered && !showMeaning && (
+            <div className="result m-5">
+              <button
+                className="m-2 rounded-md bg-gray-300 px-8 py-2 text-xl"
+                onClick={handleNextClick}
+              >
+                Next
+              </button>
+
+              {isQuestionAnswered && (
+                <button
+                  className="m-2 rounded-md bg-gray-300 px-8 py-2 text-xl"
+                  onClick={() => setShowMeaning(true)}
+                >
+                  Show meaning
+                </button>
+              )}
+            </div>
+          )}
+
+          {showMeaning && (
+            <div className="items-center px-4">
+              <DefinitionView word={questions.at(questionNumber - 1)?.answer} />
+            </div>
+          )}
+
+          {showMeaning && (
+            <div className="result m-5">
               <button
                 className="m-2 rounded-md bg-gray-300 px-8 py-2 text-xl"
                 onClick={handleNextClick}
