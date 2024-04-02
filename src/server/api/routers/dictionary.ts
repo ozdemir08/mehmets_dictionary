@@ -15,9 +15,11 @@ import {
   lookUpRequestSchema,
 } from "../schema/dictionary";
 import { TRPCError } from "@trpc/server";
+import { generateDictionaryLookupPrompt } from "../genai/genaiclient";
 
 export const dictionaryRouter = createTRPCRouter({
   lookUp: publicProcedure.input(lookUpRequestSchema).query(lookUp),
+  lookUpV2: publicProcedure.input(lookUpRequestSchema).query(lookUpV2),
   getHistory: publicProcedure.input(getHistoryRequestSchema).query(getHistory),
 });
 
@@ -61,6 +63,12 @@ async function lookUp({
   return {
     words: polishedResponse,
   } as LookUpResponse;
+}
+
+async function lookUpV2({ ctx, input }: { ctx: Context; input: LookUpRequest }): Promise<string> {
+  // TODO: Check if the result is already in the database.
+  // TODO: Cache the result in the database. 
+  return generateDictionaryLookupPrompt(input.word)
 }
 
 async function increaseLookupCounter({
