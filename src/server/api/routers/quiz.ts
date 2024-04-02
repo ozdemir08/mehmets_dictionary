@@ -30,7 +30,7 @@ async function getQuiz({
   ctx: Context;
   input: QuizRequest;
 }): Promise<QuizResponse> {
-  const words = await getNextWordsForQuiz(ctx, 120);
+  const words = await getNextWordsForQuiz(ctx, 150);
 
   // D-D-D-W-M-Y
   // 1. Eliminate words that should not be shown.
