@@ -51,7 +51,7 @@ The response should be in the markdown format as follows:
 async function generateAnswer(prompt: string): Promise<string> {
     const response = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model: 'gpt-4',
+        model: 'gpt-3.5-turbo',
     });
 
     if (response.choices.length == 0) {
