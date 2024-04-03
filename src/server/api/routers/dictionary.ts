@@ -65,30 +65,38 @@ async function lookUp({
   } as LookUpResponse;
 }
 
-async function lookUpV2({ ctx, input }: { ctx: Context; input: LookUpRequest }): Promise<string> {
-  const cachedResponse = await ctx.db.definition.findFirst({
-    where: {
-      word: input.word
-    }
-  });
+async function lookUpV2({ ctx, input }: { ctx: Context; input: LookUpRequest }): Promise<LookUpResponse> {
+  // TODO: Activate caching. 
+  // const cachedResponse = await ctx.db.definition.findFirst({
+  //   where: {
+  //     word: input.word
+  //   }
+  // });
 
-  if (cachedResponse != null) {
-    console.log("Returning cached response");
-    return cachedResponse.definition;
-  }
+  // if (cachedResponse != null) {
+  //   console.log("Returning cached response");
+  //   return cachedResponse.definition;
+  // }
 
-  const generatedResponse = await generateDictionaryLookupPrompt(input.word)
+  const generatedResponse = await generateDictionaryLookupPrompt(input.word);
+  console.log("Generated response: ", generatedResponse)
+
+  // Parse `generatedResponse` into a LookUpResponseWords object.
+  const lookUpResponseWords = JSON.parse(generatedResponse) as LookUpResponseWords;
+
 
   // TODO: Cache the result in the database. 
-  await ctx.db.definition.create({
-    data: {
-      word: input.word,
-      definition: generatedResponse
-    }
-  });
+  // await ctx.db.definition.create({
+  //   data: {
+  //     word: input.word,
+  //     definition: generatedResponse
+  //   }
+  // });
 
   console.log("Returning generated response");
-  return generatedResponse;
+  return {
+    words: lookUpResponseWords,
+  } as LookUpResponse;
 }
 
 async function increaseLookupCounter({

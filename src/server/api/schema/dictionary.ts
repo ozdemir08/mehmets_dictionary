@@ -28,7 +28,10 @@ export const meaningSchema = object({
 export const wordSchema = object({
   word: string(),
   phonetics: array(phoneticSchema),
-  meanings: array(meaningSchema)
+  meanings: array(meaningSchema),
+  mnemonics: string(),
+  etymology: string(),
+  funFact: string(),
 });
 
 export const wordsSchema = array(wordSchema);

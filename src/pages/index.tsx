@@ -47,7 +47,7 @@ export default function Home() {
           </button>
         </form>
 
-        {word != null && <DefinitionView2 word={word} />}
+        {word != null && <DefinitionView word={word} />}
       </main>
     </>
   );

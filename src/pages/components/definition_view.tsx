@@ -11,7 +11,7 @@ export default function DefinitionView(props: { word: string | undefined }) {
     await new Audio(audio).play();
   };
 
-  const lookUpResult = api.dictionary.lookUp.useQuery(
+  const lookUpResult = api.dictionary.lookUpV2.useQuery(
     { word: word! },
     {
       enabled: word != null,
@@ -112,6 +112,20 @@ export default function DefinitionView(props: { word: string | undefined }) {
                     );
                   })}
                 </div>
+                {word.mnemonics && (
+                  <div className="py-4">
+                    <div className="font-semi-bold text-2xl text-gray-700">Mnemonics</div>
+                    <div>{word.mnemonics}
+                    </div>
+                  </div>)}
+                {word.etymology && (<div className="py-4">
+                  <div className="font-semi-bold text-2xl text-gray-700">Etymology</div>
+                  <div>{word.etymology}</div>
+                </div>)}
+                {word.funFact && (<div className="py-4 ">
+                  <div className="font-semi-bold text-2xl text-gray-700">Fun fact</div>
+                  <div>{word.funFact}</div>
+                </div>)}
               </div>
             );
           })}

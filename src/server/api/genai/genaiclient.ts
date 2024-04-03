@@ -5,46 +5,55 @@ const openai = new OpenAI({
 });
 
 export async function generateDictionaryLookupPrompt(word: string): Promise<string> {
-
-    const prompt = `Act as a dictionary. Give me the meaning of "${word}". 
+    const promptJson = `
+    Act as a dictionary. Give me the meaning of "${word}". 
 The response may contain multiple "meaning"s. Each "meaning" should have a "part of speech", "pronunciation", "definition", "example sentences", "synonyms", "antonyms", "mnemonics", "etimology" and any additional fun information. 
-"example sentences" should be very long for readers to understand its context. 
+"example" should be a paragraph that would give readers enough context with the word. 
 "mnemonics" should be made of simple words. 
-The response should be in the markdown format as follows:
-# Word
+The response should be in the json format as follows:
 
+    [
+        {
+            "word": "...",
+            "phonetic": "...",
+            "phonetics": [
+                {
+                    "text": "...",
+                    "audio": "..."
+                }
+            ],
+            "meanings": [
+                {
+                    "partOfSpeech": "...",
+                    "definitions": [
+                        {
+                            "definition": "...",
+                            "synonyms": [],
+                            "antonyms": [],
+                            "example": "..."
+                        },
+                        {
+                            "definition": "...",
+                            "synonyms": [...],
+                            "antonyms": [...],
+                            "example": "..."
+                        },
+                        {
+                            "definition": "...",
+                            "synonyms": [...],
+                            "antonyms": [...]
+                        },
+                    ]
+                }
+            ],
+            "mnemonics": "...",
+            "etymology": "...",
+            "funFact": "..."
+        }
+    ]
+    `;
 
-## Part of speech: ..
-
-## Pronounciation: .. 
-
-## Definition
-.. 
-
-## Example sentences
-.. 
-
-## Synonyms: ..
-
-## Antonyms: .. 
-
-## Mnemonics
-..
-
-## Etimology:
-..
-
-## Fun fact:
-...
-
-..
-
----
-
-# Word
-... `;
-
-    return generateAnswer(prompt);
+    return generateAnswer(promptJson);
 }
 
 
