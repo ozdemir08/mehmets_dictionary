@@ -3,7 +3,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import NavigationBar from "./components/navigation_bar";
 import DefinitionView from "./components/definition_view";
 import { useState } from "react";
-import DefinitionView2 from "./components/definition_view_v2";
 
 export default function Home() {
   const word = useSearchParams().get("word");
