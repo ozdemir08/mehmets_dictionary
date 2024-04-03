@@ -24,3 +24,11 @@ model Word {
     createdAt             DateTime? @default(now())
     updatedAt             DateTime? @updatedAt
 }
+
+model Definition {
+    id         String    @id @default(auto()) @map("_id") @db.ObjectId
+    word       String
+    definition String
+    createdAt  DateTime? @default(now())
+    updatedAt  DateTime? @updatedAt
+}

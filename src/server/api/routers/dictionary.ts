@@ -66,9 +66,29 @@ async function lookUp({
 }
 
 async function lookUpV2({ ctx, input }: { ctx: Context; input: LookUpRequest }): Promise<string> {
-  // TODO: Check if the result is already in the database.
+  const cachedResponse = await ctx.db.definition.findFirst({
+    where: {
+      word: input.word
+    }
+  });
+
+  if (cachedResponse != null) {
+    console.log("Returning cached response");
+    return cachedResponse.definition;
+  }
+
+  const generatedResponse = await generateDictionaryLookupPrompt(input.word)
+
   // TODO: Cache the result in the database. 
-  return generateDictionaryLookupPrompt(input.word)
+  await ctx.db.definition.create({
+    data: {
+      word: input.word,
+      definition: generatedResponse
+    }
+  });
+
+  console.log("Returning generated response");
+  return generatedResponse;
 }
 
 async function increaseLookupCounter({
